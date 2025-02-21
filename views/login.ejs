@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+
+    <title>Feedback Form</title>
+
+    <style>
+        .navbar-dark .navbar-brand {
+            color: #fff;
+        }
+        .navbar-brand {
+            display: inline-block;
+            padding-top: .3125rem;
+            padding-bottom: .3125rem;
+            margin-right: .5rem;
+            font-size: 1.25rem;
+            line-height: inherit;
+            white-space: nowrap;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            background-color: transparent;
+        } 
+
+      div {
+          display: block;
+          unicode-bidi: isolate;
+      }
+
+      .navbar {
+          position: relative;
+          display: -ms-flexbox;
+          display: flex
+      ;
+          -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+          -ms-flex-align: center;
+          align-items: center;
+          -ms-flex-pack: justify;
+          justify-content: space-between;
+          padding: .5rem 1rem;
+      }
+
+      .navbar-dark {
+          background-color: #343a40;
+      }
+
+      .nav {
+          display: block;
+          unicode-bidi: isolate;
+      }
+
+      .navbar {
+          position: relative;
+          display: -ms-flexbox;
+          display: flex
+      ;
+          -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+          -ms-flex-align: center;
+          align-items: center;
+          -ms-flex-pack: justify;
+          justify-content: space-between;
+          padding: .5rem .5rem;
+      }
+      .navbar-nav {
+          display: -ms-flexbox;
+          display: flex
+      ;
+          -ms-flex-direction: column;
+          flex-direction: column;
+          padding-left: 0;
+          margin-bottom: 0;
+          list-style: none;
+      }
+
+      .collapse:not(.show) {
+          display: none;
+      }
+      .navbar-collapse {
+          -ms-flex-preferred-size: 100%;
+          flex-basis: 100%;
+          -ms-flex-positive: 1;
+          flex-grow: 1;
+          -ms-flex-align: center;
+          align-items: center;
+      }
+
+      
+
+      
+      @media (min-width: 992px) {
+          .navbar-expand-lg {
+              -ms-flex-flow: row nowrap;
+              flex-flow: row nowrap;
+              -ms-flex-pack: start;
+              justify-content: flex-start;
+          }
+
+          .navbar-expand-lg .navbar-collapse {
+              display: -ms-flexbox !important;
+              display: flex !important
+      ;
+              -ms-flex-preferred-size: auto;
+              flex-basis: auto;
+          }
+          .navbar-expand-lg .navbar-nav {
+              -ms-flex-direction: row;
+              flex-direction: row;
+          }
+      }
+      article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
+          display: block;
+      }
+      article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
+          display: block;
+      }
+      *, ::after, ::before {
+          box-sizing: border-box;
+      }
+      *, ::after, ::before {
+          box-sizing: border-box;
+      }
+
+
+        .transparent-button {
+            background-color: transparent; 
+            border: none;
+            color: inherit; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            transition: background-color 0.3s ease;
+        }
+
+        .transparent-button:hover {
+            background-color: rgba(0, 0, 0, 0.1); 
+        }
+
+        label:not(.form-check-label):not(.custom-file-label) {
+              font-weight: 600;
+          }
+        label {
+              display: inline-block;
+              margin-bottom: .1rem;
+          }
+
+          .rotatingText {
+  font-family: "Georgia", serif;
+  font-style: italic;
+  font-size: 18px;
+  text-align: center;
+  position: relative;
+}
+
+.rotatingText-adjective {
+    font-family: "Open Sans", sans-serif;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    left: 0;
+    opacity: 0;
+    position: fixed;
+    text-align: left;
+    right: 0;
+    text-transform: uppercase;
+    top: 0;
+    padding-left: 100px;
+    padding-top:1rem;
+    animation: rotate 9s infinite;
+}
+
+.rotatingText-adjective:nth-of-type(1) {
+  animation-delay: 0s;
+}
+
+.rotatingText-adjective:nth-of-type(2) {
+  animation-delay: 3s;
+}
+
+.rotatingText-adjective:nth-of-type(3) {
+  animation-delay: 6s;
+}
+
+
+@keyframes rotate {
+  0% { opacity: 0; transform: translateY(15px); }
+  10%, 30% { opacity: 1; transform: translateY(0); }
+  40%, 100% { opacity: 0; transform: translateY(-15px); }
+}
+  
+    </style>
+  </head>
+  <body  style="margin: 0; padding: 0; background: url('/assets/images/manit_bg.jpeg') no-repeat center center fixed; background-size: cover;">
+     
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      
+          <a class="navbar-brand" style="padding: 0px 20px; margin: 0px; float: left; color: #fff;" href="http://manit.ac.in" target="_blank">
+                  <img height="50px" alt="MANIT" class="img img-responsive" src="/assets/images/MANIT logo.png">
+          </a>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkupTopHeader">
+    <div class="navbar-nav">
+        <ul style="padding: 0px; margin: 0px;">
+            <li class="d-none d-md-block d-lg-block text-warning">
+                <!-- Rotating Text Slider -->
+                <p class="rotatingText">
+                    <span class="rotatingText-adjective">Maulana Azad National Institute of Technology</span>
+                    <span class="rotatingText-adjective">Faculty Feedback System</span>
+                    
+                    <span class="rotatingText-adjective">MANIT Bhopal</span> 
+                    
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+     
+    
+  </nav>
+  <% const alertMessage = message || 'Welcome! Please log in.'; %> 
+<% if (alertMessage) { %>
+    <div class="alert alert-info alert-dismissible fade show text-center" role="alert" 
+         style="margin: 15px auto; width: 60%; max-width: 500px; padding: 15px; 
+                border-radius: 8px; font-size: 16px; font-weight: 500; 
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); background-color: #e3f2fd; color: #0d47a1;">
+        <strong>ℹ️ Info:</strong> <%= alertMessage %>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="font-size: 18px; color: #0d47a1;">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+<% } %>
+
+ 
+        <form action="/api/user/login" method="post">
+          <section class="form-02-main">
+              <div class="container">
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="_lk_de">
+                              <div class="form-03-main dark-theme">
+                                  <div class="logo">
+                                      <img src="/assets/images/user.png">
+                                  </div>
+                                  <h4 align="center">Login Here</h4>  
+                                  <div class="form-group">
+                                      <input type="text" id="username" name="username" class="form-control _ge_de_ol" placeholder="Enter Username" required aria-required="true">
+                                  </div>
+      
+                                  <div class="form-group">
+                                      <input type="password" name="password" class="form-control _ge_de_ol" placeholder="Enter Password" required aria-required="true">
+                                  </div>
+      
+                                  <div class="form-group">
+                                    <button type="submit" class="login-button">LOGIN</button>
+                                </div>
+      
+                                <div class="form-group nm_lk"><p></p></div>
+      
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+      </form>
+        <script type="text/javascript">
+          function disableBack() { window.history.forward(); }
+          setTimeout("disableBack()", 0);
+          window.onunload = function () { null };
+          </script>
+  </body>
+</html>

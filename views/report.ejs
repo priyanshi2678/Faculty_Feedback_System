@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/styles2.css" rel="stylesheet">
+    <title>Feedback Report</title>
+
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f8f9fa;
+        } */
+
+        /* .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #9850E4;
+            text-transform: uppercase;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            color: #ffffff;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #9850E4;
+            color: #1a1a2e;
+        } */
+
+        /* .main {
+            margin-left: 260px;
+            padding: 20px;
+        }
+        .main h1,h2 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            
+        }
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        } */
+        /* 
+        .filter-form {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .filter-form label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .filter-form select, .filter-form button {
+            margin-right: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .filter-form button {
+            background-color: #9850E4;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+        } */
+
+        /* .table-container {
+            max-height: 400px; 
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            color: #333;
+        }
+
+        th {
+            background-color: #9850E4;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.3s ease;
+        } */
+        /* 
+        .no-feedback {
+            text-align: center;
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .question-section {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-section h2 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #9850E4;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .question-list {
+            list-style-type: decimal;
+            padding-left: 20px;
+            margin: 0;
+            display: none;
+        }
+
+        .question-list li {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+        } */
+        /* .btn-danger{
+          border-radius: 8px;
+        }
+        .btn-danger:hover{
+          background-color:white;
+          font-weight: bold;
+          border-color:#9850E4;
+          color:#9850E4;
+        } */
+    </style>
+</head>
+<%- include('partials/header', { activePage: 'report' }) %>
+<body>
+
+    <div class="main">
+        <div class="card">
+            <h1>Feedback Report</h1>
+            <div class="question-section">
+                <h2 onclick="toggleQuestions()">View Feedback Questions</h2>
+                <ul id="question-list" class="question-list">
+                    <li>1.How would you rate the clarity of the instructor's explanations?</li>
+                    <li>2.Did the instructor effectively engage with the students?</li>
+                    <li>3.Were the course materials organized and easy to follow?</li>
+                    <li>4.Did the instructor provide helpful feedback on assignments?</li>
+                    <li>5.How approachable was the instructor for questions and assistance?</li>
+                    <li>6.Did the instructor encourage active participation in class discussions?</li>
+                    <li>7.Did the instructor demonstrate a good understanding of the subject matter?</li>
+                    <li>8.Was the pace of the course appropriate for learning?</li>
+                    <li>9.Did the instructor encourage critical thinking and problem-solving?</li>
+                    <li>10.Overall, how satisfied are you with the instructor's teaching?</li>
+                </ul>
+            </div>
+            <form class="filter-form" action="/report" method="get">
+                <label for="facultyId"style="color: black;">Select Faculty:</label>
+                <select name="facultyId" id="facultyId">
+                    <option value="" <%=!facultyId ? 'selected' : '' %>>All Faculties</option>
+                    <% faculties.forEach(faculty=> { %>
+                        <option value="<%= faculty.id %>" <%=facultyId==faculty.id ? 'selected' : '' %>>
+                            <%= faculty.name %>
+                        </option>
+                        <% }) %>
+                </select>
+
+                <label for="feedbackYear" style="color: black;">Select Year:</label>
+                <select name="feedbackYear" id="feedbackYear">
+                    <option value="2023" <%=feedbackYear=='2023' ? 'selected' : '' %>>2023</option>
+                    <option value="2024" <%=feedbackYear=='2024' ? 'selected' : '' %>>2024</option>
+                    <option value="2025" <%=feedbackYear=='2025' ? 'selected' : '' %>>2025</option>
+                </select>
+
+                <label for="semesterType" style="color: black;">Select Semester Type:</label>
+
+                <select name="semesterType" id="semesterType">
+                    <option value="" <%=!semesterType ? 'selected' : '' %>>All</option>
+                    <option value="Odd" <%=semesterType=='Odd' ? 'selected' : '' %>>Odd</option>
+                    <option value="Even" <%=semesterType=='Even' ? 'selected' : '' %>>Even</option>
+                </select>
+
+                <button type="submit">Filter</button>
+            </form>
+
+
+            <% if (feedbacks.length> 0) { %>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Section</th>
+                                <th>Branch</th>
+                                <th>Semester</th>
+                                <th>Subject</th>
+                                <th>Faculty Name</th>
+                                <th>Feedback Year</th>
+
+                                <% for (let i=1; i <=10; i++) { %>
+                                    <th>Score Q<%= i %>
+                                    </th>
+                                    <% } %>
+                                        <th>Average Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% feedbacks.forEach(feedback=> { %>
+                                <tr>
+                                    <td>
+                                        <%= feedback.year %>
+                                    </td>
+                                    <td>
+                                        <%= feedback.section %>
+                                    </td>
+                                    <td>
+                                        <%= feedback.branch %>
+                                    </td>
+                                    <td>
+                                        <%= feedback.semester %>
+                                    </td>
+                                    <td>
+                                        <%= feedback.subject %>
+                                    </td>
+                                    <td>
+                                        <%= feedback.faculty_name %>
+                                    </td>
+                                    <td>
+                                        <%= feedback.feedback_year %>
+                                    </td>
+                                    <% let totalScore=0; %>
+                                        <% let validResponses=feedback.responses ? feedback.responses : 1; %>
+
+                                            <% for (let i=1; i <=10; i++) { %>
+                                                <% let score=feedback['q' + i] ? feedback['q' + i] / validResponses : 0;
+                                                    %>
+                                                    <% totalScore +=score; %>
+                                                        <td>
+                                                            <%= feedback['q' + i] && feedback.responses ?
+                                                                score.toFixed(2) : 'N/A' %>
+                                                        </td>
+                                                        <% } %>
+
+                                                            <!-- Extra column for the average score of all 10 questions -->
+                                                            <td style="background-color: #BB86FC; font-weight: bold;">
+                                                                <%= feedback.responses ? (totalScore / 10).toFixed(2) : 'N/A' %>
+                                                            </td>
+                                </tr>
+                                <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- <button id="download-pdf" class="btn btn-success">Download PDF</button> -->
+                <% } else { %>
+                    <div class="no-feedback">No feedbacks available.</div>
+                    <% } %>
+                    <a href="/report/download?facultyName=<%= encodeURIComponent(facultyId ? faculties.find(f => f.id == facultyId)?.name || '' : '') %>&feedbackYear=<%= feedbackYear %>" class="btn btn-primary">
+                        Download PDF
+                    </a>
+        </div>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    function toggleQuestions() {
+        const questionList = document.getElementById("question-list");
+        questionList.style.display = questionList.style.display === "none" ? "block" : "none";
+    }
+    document.getElementById('download-pdf')?.addEventListener('click', () => {
+        const { jsPDF } = window.jspdf;
+
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text('Feedback Report', 14, 16);
+
+        // Use autoTable plugin to format table
+        doc.autoTable({
+            html: '#feedback-table',
+            startY: 20,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 123, 255] }
+        });
+
+        doc.save('Feedback_Report.pdf');
+    });
+</script>
+<%- include('partials/footer') %>
+
+</html>

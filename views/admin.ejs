@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/styles2.css" rel="stylesheet">
+
+    <title>Admin Page</title>
+
+    <style>
+        /* body {
+           font-family: Arial, sans-serif;
+           margin: 0;
+           padding: 0;
+           color: #ddd;
+           background:  #1c1c25;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #BB86FC;
+            text-transform: uppercase;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            color: #ffffff;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color:#BB86FC;
+            color: #1a1a2e;
+        }
+
+        .main {
+           margin-left: 260px;
+           padding: 20px;
+        }
+        .main h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard {
+           display: grid;
+           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+           grid-gap: 20px;
+        }
+        
+        .card {
+           background: rgba(255, 255, 255, 0.1);
+           padding: 20px;
+           border-radius: 10px;
+           box-shadow: 0 4px 8px rgba(5, 5, 5, 0.3);
+           text-decoration: none;
+           color: #fff;
+           height: 200px;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           justify-content: center;
+           text-align: center;
+           transition: transform 0.3s ease, box-shadow 0.3s ease;
+           backdrop-filter: blur(5px);
+        }
+        
+        .card:hover {
+           transform: translateY(-5px);
+           box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .card img {
+           max-width: 80px;
+           height: auto;
+           margin-bottom: 10px;
+        }
+
+        .card p {
+           margin: 0;
+           font-size: 1.1em;
+           font-weight: bold;
+        }
+
+        .btn-danger {
+          border-radius: 8px;
+          background-color: #d9534f;
+          border: none;
+        }
+        .btn-danger:hover {
+          background-color: white;
+          font-weight: bold;
+          border-color: #BB86FC;
+          color: #BB86FC;
+        } */
+    </style>
+  </head>
+  <%- include('partials/header', { activePage: 'admin' }) %>
+  <body>
+    <div class="main">
+      <h1>Welcome</h1>
+      <div class="dashboard">
+        <a href="/discipline" class="card">
+          <img src="/assets/images/admin.png" alt="Dashboard">
+          <p>Add Discipline</p>
+        </a>
+        <a href="/branches" class="card">
+          <img src="/assets/images/branch.png" alt="Branches">
+          <p>Branches</p>
+        </a>
+        <a href="/subjects" class="card">
+          <img src="/assets/images/subjects.png" alt="Subjects">
+          <p>Subjects</p>
+        </a>
+        <a href="/faculty" class="card">
+          <img src="/assets/images/faculty.png" alt="Faculty">
+          <p>Faculty</p>
+        </a>
+        <a href="/mapping" class="card">
+          <img src="/assets/images/mapping.png" alt="Map">
+          <p>Map</p>
+        </a>
+        <a href="/server" class="card">
+          <img src="/assets/images/server.png" alt="Server">
+          <p>Server</p>
+        </a>
+        <a href="/report" class="card">
+          <img src="/assets/images/report.png" alt="Map">
+          <p>Report</p>
+        </a>
+        <a href="/teacher-remarks" class="card">
+          <img src="/assets/images/remarks.png" alt="Map">
+          <p>Faculty Remarks</p>
+        </a>
+      </div>
+    </div>
+  </body>
+  <%- include('partials/footer') %>
+</html>

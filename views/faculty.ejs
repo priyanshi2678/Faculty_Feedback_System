@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/styles2.css" rel="stylesheet">
+
+    <title>Faculty</title>
+
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .header img {
+            width: 100%;
+            height: auto;
+        } */
+
+        /* .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #BB86FC;
+            text-transform: uppercase;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            color: #ffffff;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #BB86FC;
+            color: #1a1a2e;
+        } */
+
+        /* .main {
+            margin-left: 260px; 
+            padding: 20px; 
+        } */
+        /* .main h1,h2 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            
+        }
+
+        .form-control, .btn {
+            margin-bottom: 15px;
+        }
+
+        .btn-primary, .btn-secondary, .btn-danger, .btn-warning {
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background-color: #BB86FC;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .btn-warning {
+            background-color: #BB86FC;
+        }
+
+        .card {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .table-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .table-actions form {
+            margin: 0;
+        }
+
+        .table-actions a {
+            margin-left: 10px;
+        }
+        .btn-danger{
+          border-radius: 8px;
+        }
+        .btn-danger:hover{
+          background-color:white;
+          font-weight: bold;
+          border-color:#BB86FC;
+          color:#BB86FC;
+        } */
+    </style>
+</head>
+<%- include('partials/header', { activePage: 'faculty' }) %>
+<body>
+
+    <div class="main">
+        <div class="card">
+            <h1>Add Faculty</h1>
+            <form action="/faculty/add" method="POST">
+                <div class="form-group">
+                    <label for="faculty_name">Name*</label>
+                    <input type="text" id="faculty_name" name="faculty_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email*</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone*</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="discipline">Discipline*</label>
+                    <select id="discipline_id" name="discipline_id" class="form-control">
+                        <option value="">Select Discipline</option>
+                        <% disciplines.forEach(discipline => { %>
+                            <option value="<%= discipline.id %>"><%= discipline.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="branch">Branch*</label>
+                    <select id="branch_id" name="branch_id" class="form-control">
+                        <option value="">Select Branch</option>
+                        <% branches.forEach(branch => { %>
+                            <option value="<%= branch.branch_id %>" data-discipline="<%= branch.discipline_id %>"><%= branch.branch_name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Faculty</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h1>Upload Faculty Excel File</h1>
+            <p><strong>File Format:</strong> The file should be formatted with the following columns: 
+                <code>faculty_name , email , phone , discipline_id , branch_id
+                </code>
+                </p>
+            <form action="/faculty/upload" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" name="facultyFile" accept=".xlsx, .xls" class="form-control-file" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h1>Faculty List</h1>
+            <div class="table-responsive">
+                <table >
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Branch ID</th>
+                            <!-- <th>Actions</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% faculties.forEach((faculty, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= faculty.name %></td>
+                                <td><%= faculty.email %></td>
+                                <td><%= faculty.phone %></td>
+                                <td><%= faculty.branch_id %></td>
+                                <!-- <td class="table-actions">
+                                    <form action="/faculty/delete/<%= faculty.id %>" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form> -->
+                                    <!-- <a href="/faculty/edit/<%= faculty.id %>" class="btn btn-warning btn-sm">Edit</a> -->
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#discipline_id').on('change', function () {
+                var selectedDiscipline = $(this).val();
+                $('#branch_id option').each(function () {
+                    var branchDisciplineId = $(this).data('discipline');
+                    if (selectedDiscipline === "" || branchDisciplineId == selectedDiscipline) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+                $('#branch_id').val('');
+            });
+        });
+    </script>
+</body>
+<%- include('partials/footer') %>
+</html>

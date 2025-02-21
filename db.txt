@@ -1,0 +1,6 @@
+Tables Needed:-
+Student - Scholar No. (PK) ,Name,Year, Branches-subjects, Feedback Submitted or not
+Faculty- UniqueID, Name, year+subjects+section
+Admin rights- Unique ID, Name
+Year
+Branches-Subjects

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/styles2.css" rel="stylesheet">
+    
+
+    <title>Edit Discipline</title>
+  </head>
+  <body>
+    <div class="main">
+        <h1>Edit Discipline</h1>
+        <form action="/discipline/edit/<%= discipline.id %>" method="post">
+            <label for="discipline_name">Discipline</label>
+            <input type="text" id="discipline_name" name="discipline_name" value="<%= discipline.name %>" required>
+            <label for="duration">Duration</label>
+            <input type="text" id="duration" name="duration" value="<%= discipline.duration %>" required>
+            <button type="submit">Update Discipline</button>
+        </form>
+    </div>
+  </body>
+</html>

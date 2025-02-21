@@ -1,0 +1,226 @@
+body{
+  background-color: #bc89fc;
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif; /* Example font family */
+    color: rgba(255, 255, 255, 0.371); /* Example text color */
+}
+.bullet-points {
+  list-style-type: none;
+  padding: 0;
+  display: grid;
+  gap: 10px; /* Space between columns and rows */
+  row-gap: 15px; /* Increases spacing between rows */
+  margin-bottom: 10px;
+  margin-top: 6px;
+  justify-items: center; /* Center items in grid */
+}
+
+/* Default: 10 items in one row */
+.bullet-points {
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: auto;
+}
+
+/* For small screens (phones), 5 in one row */
+@media screen and (max-width: 768px) {
+  .bullet-points {
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, auto);
+  }
+}
+
+/* Active bullet point styling */
+.bullet-points li.active {
+  border-color: #9948fc;
+  box-shadow: 0 0 5px #9948fc;
+  transform: scale(1.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+
+
+
+      .bullet-points li {
+          color:black;
+          background-color: rgba(255, 255, 255, 0.573);
+          font-weight: bold;
+          cursor: pointer;
+          padding: 10px;
+          border-radius: 50%;
+          border: 2px solid #ccc;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 1px;
+      }
+
+
+/* Dynamically set bullet colors (red to green) */
+.bullet-points li:nth-child(1) { background-color: #ff4d4d; } /* Worst */
+.bullet-points li:nth-child(2) { background-color: #ff704d; }
+.bullet-points li:nth-child(3) { background-color: #ff944d; }
+.bullet-points li:nth-child(4) { background-color: #ffb94d; }
+.bullet-points li:nth-child(5) { background-color: #ffdd4d; }
+.bullet-points li:nth-child(6) { background-color: #d4ff4d; }
+.bullet-points li:nth-child(7) { background-color: #a6ff4d; }
+.bullet-points li:nth-child(8) { background-color: #79ff4d; }
+.bullet-points li:nth-child(9) { background-color: #4dff4d; }
+.bullet-points li:nth-child(10) { background-color: #33cc33; } /* Best */
+
+.bullet-points li:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Button - Gradient from Red to Green */
+/* More specific rule to avoid affecting other buttons */
+button:not(.logout-button):not(.next-button):not(.submit-button) {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #ff4747, #4caf50);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:not(.logout-button):not(.next-button):not(.submit-button):hover {
+  background: linear-gradient(90deg, #e63939, #3e8e41);
+  transform: scale(1.05);
+}
+
+
+      .next-button, .submit-button {
+          background-color: #8520ff;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-top: 10px;
+      }
+
+      .next-button:hover, .submit-button:hover {
+          background-color: #9948fc;
+      }
+      h5 {
+      color: #000000;
+    }
+    h4 {
+      color: #000;
+    }
+    h1{
+      color:rgb(0, 0, 0);
+    }
+    .logout-form {
+          margin-left: auto;
+      }
+
+      .logout-button {
+          background-color: red;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+          font-weight: bold;
+      }
+      .logout-button:hover {
+          background-color: darkred;
+      }
+      textarea {
+  width: 100%;
+  max-width: 100%; /* Prevents overflow */
+  box-sizing: border-box; /* Ensures padding is included in width */
+  resize: vertical; /* Allows resizing only vertically */
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.744);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease;
+  opacity: 0.9;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 32px;
+  color: rgb(0, 0, 0);
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+h4 {
+  color: rgb(0, 0, 0);
+}
+
+label {
+  font-weight: bold;
+  color: rgb(6, 6, 6);
+  display: block;
+  margin-bottom: 5px;
+  transition: color 0.3s ease;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.faculty-feedback {
+  animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+  from {
+      opacity: 0;
+      transform: translateX(-20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateX(0);
+  }
+}

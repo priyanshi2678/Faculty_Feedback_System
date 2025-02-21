@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="/assets/css/style.css" rel="stylesheet">
+  <link href="/assets/css/styles2.css" rel="stylesheet">
+
+  <title>Edit Faculty</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #f8f9fa;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .header img {
+      width: 100%;
+      height: auto;
+    }
+
+    /* .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #BB86FC;
+            text-transform: uppercase;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            color: #ffffff;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #BB86FC;
+            color: #1a1a2e;
+        } */
+
+    .main {
+      margin-left: 260px;
+      padding: 20px;
+    }
+
+    .main form {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .main input, .main select {
+      flex: 1 0 100%;
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .main button {
+      margin: 10px;
+      padding: 10px;
+      border: none;
+      background-color: #BB86FC;
+      color: #fff;
+      border-radius: 4px;
+    }
+    .main h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h4>Admin Panel</h4>
+    <a href="/admin"><i class="fas fa-home"></i> Dashboard</a>
+    <!-- <a href="/collegeDetails"><i class="fas fa-building"></i> College Details</a> -->
+    <a href="/discipline"><i class="fas fa-book"></i> Discipline</a>
+    <a href="/branches"><i class="fas fa-code-branch"></i> Branches</a>
+    <a href="/subjects"><i class="fas fa-book-open"></i> Subjects</a>
+    <a href="/faculty"><i class="fas fa-user-tie"></i> Faculty</a>
+    <a href="/mapping"><i class="fas fa-map"></i> Mapping</a>
+    <a href="/server"><i class="fas fa-server"></i> Server</a>
+    <a href="/report"><i class="fas fa-chart-line"></i> Report</a>
+    <a href="/teacher-remarks"><i class="fas fa-comment"></i> Faculty Remarks</a>
+    <form action="/logout?_method=DELETE" method="POST" style="display:inline;">
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+</div>
+
+  <div class="main">
+    <h1>Edit Faculty</h1>
+    <form id="edit-faculty-form">
+      <input type="hidden" id="faculty-id" name="id" value="<%= faculty.id %>">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" value="<%= faculty.name %>" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" value="<%= faculty.email %>" required>
+      <label for="phone">Phone:</label>
+      <input type="tel" id="phone" name="phone" value="<%= faculty.phone %>" required>
+      <label for="branch">Branch:</label>
+      <select id="branch" name="branch" required>
+        <div class="form-group">
+                    <label for="discipline">Discipline*</label>
+                    <select id="discipline_id" name="discipline_id" class="form-control">
+                        <option value="">Select Discipline</option>
+                        <% disciplines.forEach(discipline => { %>
+                            <option value="<%= discipline.id %>"><%= discipline.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+        <% branches.forEach(branch => { %>
+          <option value="<%= branch.id %>" <%= faculty.branch_id === branch.id ? 'selected' : '' %>><%= branch.name %></option>
+        <% }); %>
+      </select>
+      <button type="submit">Update Faculty</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('edit-faculty-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const id = document.getElementById('faculty-id').value;
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const branch = document.getElementById('branch').value;
+
+      try {
+        const response = await fetch(`/faculty/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, email, phone, branch })
+        });
+
+        if (response.ok) {
+          alert('Faculty updated successfully');
+          window.location.href = '/faculty';
+        } else {
+          alert('Failed to update faculty');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error updating faculty');
+      }
+    });
+  </script>
+</body>
+</html>
