@@ -306,7 +306,7 @@
             <tbody>
             <% subjectSemesterMappings.forEach(mapping => { %>
                 <tr>
-                    <td><%= mapping.subjectname %></td>
+                    <td><%= mapping.subjectName %></td>
                     <td><%= mapping.semester %></td>
                     
                 </tr>
@@ -370,8 +370,8 @@
             <tbody>
             <% facultySubjectMappings.forEach(mapping => { %>
                 <tr>
-                    <td><%= mapping.facultyname %></td>
-                    <td><%= mapping.subjectname %></td>
+                    <td><%= mapping.facultyName %></td>
+                    <td><%= mapping.subjectName %></td>
                     <td><%= mapping.section %></td>
                     
                 </tr>
@@ -386,6 +386,14 @@
             <p><strong>File Format:</strong> The file should be formatted with the following columns: 
                 <code>unique_id, Name, Branch Name, Year, Section, Discipline ID, Semester, Subject 1, Subject 2, ...</code>
                 </p>
+
+                <div class="form-group d-flex align-items-center">
+                    <label class="mr-2">Sample Excel file:</label>
+                    <a href="/downloads/student_subject_mapping.xlsx" download class="btn btn-secondary">
+                       Download
+                    </a>
+                   </div>
+
             <form action="/api/mapping/studentSubject" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="studentFile">Choose Excel File:</label>

@@ -3,6 +3,9 @@
     <a href="/admin" class="<%= activePage === 'admin' ? 'active' : '' %>">
         <i class="fas fa-home"></i> Dashboard
     </a>
+    <a href="/students" class="<%= activePage === 'students' ? 'active' : '' %>">
+        <i class="fas fa-user-graduate"></i> Students
+    </a>
     <a href="/discipline" class="<%= activePage === 'discipline' ? 'active' : '' %>">
         <i class="fas fa-book"></i> Discipline
     </a>
@@ -27,6 +30,7 @@
     <a href="/teacher-remarks" class="<%= activePage === 'remarks' ? 'active' : '' %>">
         <i class="fas fa-comment"></i> Faculty Remarks
     </a>
+    
     <form action="/logout?_method=DELETE" method="POST" style="display:inline;">
         <button type="submit" class="btn btn-danger">Logout</button>
     </form>

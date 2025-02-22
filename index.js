@@ -359,6 +359,282 @@ app.post("/signup", async(req, res) => {
 
   // res.render('login')
 });
+
+app.get('/students', checkAuthenticated, async (req, res) => {
+    const db = getDB();
+
+    console.log("Received Query Params:", req.query); // Log all query params
+
+    try {
+        // Fetch has_changed status
+        const [statusResult] = await db.execute(
+            `SELECT IFNULL(MAX(has_changed), 1) AS has_changed FROM users WHERE role = 'student'`
+        );
+        const hasChangedStatus = statusResult[0].has_changed;
+
+        // Fetch disciplines
+        const [disciplines] = await db.execute(
+            'SELECT id, name, duration FROM discipline'
+        );
+
+        // Fetch branches based on selected discipline
+        let branches = [];
+        console.log("Fetching branches for discipline_id:", req.query.discipline_id);
+        if (req.query.discipline_id) {
+            [branches] = await db.execute(
+                'SELECT branch_id, branch_name FROM branchnew WHERE discipline_id = ?',
+                [req.query.discipline_id]
+            );
+        }
+
+        // Get year dropdown values
+        let years = [];
+        if (req.query.discipline_id) {
+            const selectedDiscipline = disciplines.find(d => d.id == req.query.discipline_id); // Fix: Use `id` instead of `discipline_id`
+            if (selectedDiscipline) {
+                years = Array.from({ length: selectedDiscipline.duration }, (_, i) => i + 1);
+            }
+        }
+
+        // Hardcoded section options
+        let sections = [];
+        if (req.query.discipline_id && req.query.year) {
+            if (req.query.year == '1') {
+                sections = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+            } else {
+                sections = ['1', '2', '3'];
+            }
+        }
+
+        // Fetch students based on filters and has_filled == 0
+        let students = [];
+        if (req.query.discipline_id && req.query.year && req.query.branch_name && req.query.section) {
+            [students] = await db.execute(
+                `SELECT uniqueid, name 
+                 FROM users 
+                 WHERE discipline_id = ? 
+                   AND year = ? 
+                   AND branch_name = ? 
+                   AND section = ? 
+                   AND has_filled = 0`, // Add condition for has_filled == 0
+                [req.query.discipline_id, req.query.year, req.query.branch_name, req.query.section]
+            );
+        }
+
+        res.render('students', {
+            hasChangedStatus,  // ✅ Now included
+            disciplines,
+            branches,
+            years,
+            sections,
+            students,
+            discipline_id: req.query.discipline_id || "",
+            branch_name: req.query.branch_name || "",
+            year: req.query.year || "",
+            section: req.query.section || ""
+        });
+
+    } catch (error) {
+        console.error('Error fetching student data:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/api/branches', checkAuthenticated, async (req, res) => {
+  const db = getDB();
+  const { discipline_id } = req.query;
+
+  if (!discipline_id) {
+      return res.status(400).json({ error: "Discipline ID is required" });
+  }
+
+  try {
+      // Fetch branches for the selected discipline
+      const [branches] = await db.execute(
+          'SELECT branch_id, branch_name FROM branchnew WHERE discipline_id = ?',
+          [discipline_id]
+      );
+
+      // Fetch discipline details (name and duration)
+      const [discipline] = await db.execute(
+          'SELECT name, duration FROM discipline WHERE id = ?',
+          [discipline_id]
+      );
+
+      // Send branches, discipline name, and duration as JSON response
+      res.json({
+          branches,
+          discipline_name: discipline[0]?.name || "", // Include discipline name
+          duration: discipline[0]?.duration || 4 // Default to 4 years if duration is missing
+      });
+  } catch (error) {
+      console.error('Error fetching branches:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/students/toggle', async (req, res) => {
+  const db = getDB();
+    try {
+        // Get current state
+        const [result] = await db.execute(`
+            SELECT IFNULL(MAX(has_changed), 1) AS has_changed FROM users WHERE role = 'student'
+        `);
+        const newState = result[0].has_changed ? 0 : 1; // Toggle value
+        
+        // Update database
+        await db.execute(`UPDATE users SET has_changed = ? WHERE role = 'student'`, [newState]);
+
+        res.redirect('/students'); // Reload page after update
+    } catch (error) {
+        console.error('Error updating students:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+app.post('/students/upload', async (req, res) => {
+    const db = getDB();
+
+    // Check if file is uploaded
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
+
+    const studentFile = req.files.studentFile;
+    const uploadPath = path.join(__dirname, 'uploads', studentFile.name);
+
+    // Move the uploaded file to the server
+    studentFile.mv(uploadPath, async (err) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
+
+        try {
+            // Read the uploaded Excel file
+            const workbook = xlsx.readFile(uploadPath);
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const data = xlsx.utils.sheet_to_json(sheet);
+
+            // Process each row in the file
+            for (const row of data) {
+                const { scholar_number, name, branch, semester, section } = row;
+
+                // Calculate Year from Semester
+                const year = Math.ceil(semester / 2);
+
+                // Fetch discipline_id from branchnew table
+                const [branchResult] = await db.execute(
+                    'SELECT discipline_id FROM branchnew WHERE branch_name = ?',
+                    [branch]
+                );
+                const discipline = branchResult[0];
+
+                if (!discipline) {
+                    console.error(`Discipline not found for branch: ${branch}`);
+                    continue; // Skip this entry
+                }
+
+                // Insert student data into users table
+                await db.execute(
+                    `INSERT INTO users (uniqueid, name, role, has_filled, password, branch_name, 
+                        year, section, discipline_id, semester, is_allowed) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                        scholar_number, name, 'student', 0, scholar_number, branch,
+                        year, section, discipline.discipline_id, semester, 0
+                    ]
+                );
+            }
+
+            // Delete the uploaded file after processing
+            fs.unlinkSync(uploadPath);
+
+            // Redirect to students page after success
+            res.redirect('/students');
+        } catch (err) {
+            console.error('Error processing the file:', err);
+            res.status(500).send('Error processing the file: ' + err.message);
+        }
+    });
+});
+
+// app.get("/students/filter", async (req, res) => {
+//   const db = getDB();
+//   const { discipline_id, year, branch, section } = req.query;
+
+//   try {
+//       let query = `
+//           SELECT u.uniqueid, u.name
+//           FROM users u
+//           JOIN discipline d ON u.discipline_id = d.id
+//           WHERE 1=1
+//       `;
+//       let values = [];
+
+//       if (discipline_id) {
+//           query += " AND u.discipline_id = ?";
+//           values.push(discipline_id);
+//       }
+//       if (year) {
+//           query += " AND u.year = ?";
+//           values.push(year);
+//       }
+//       if (branch) {
+//           query += " AND u.branch_name = ?";
+//           values.push(branch);
+//       }
+//       if (section) {
+//           query += " AND u.section = ?";
+//           values.push(section);
+//       }
+
+//       // Execute Query
+//       const [students] = await db.execute(query, values);
+
+//       // Fetch filter dropdown data
+//       const [disciplines] = await db.execute("SELECT id, name, duration FROM discipline");
+//       const selectedDiscipline = disciplines.find(d => d.id == discipline_id);
+//       const selectedDisciplineDuration = selectedDiscipline ? selectedDiscipline.duration : null;
+//       const selectedDisciplineName = selectedDiscipline ? selectedDiscipline.name : null;
+//       const [branches] = await db.execute("SELECT branch_name FROM branchnew WHERE discipline_id = ?", [discipline_id || 0]);
+
+//       // Ensure discipline_id is properly set (convert null/undefined to an empty string)
+//       res.render("students", { 
+//           disciplines, 
+//           branches, 
+//           students, 
+//           selectedDisciplineDuration, 
+//           selectedDisciplineName, 
+//           discipline_id: discipline_id || "",  // Ensure it's defined
+//           year: year || "", 
+//           branch: branch || "", 
+//           section: section || "" 
+//       });
+//   } catch (error) {
+//       console.error("Error filtering students:", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+// app.get("/get-discipline-duration", async (req, res) => {
+//   const db = getDB();
+//   const { discipline_id } = req.query;
+
+//   try {
+//       const [rows] = await db.execute("SELECT duration FROM discipline WHERE id = ?", [discipline_id]);
+//       if (rows.length > 0) {
+//           res.json({ duration: rows[0].duration });
+//       } else {
+//           res.json({ duration: 0 });
+//       }
+//   } catch (error) {
+//       console.error("Error fetching discipline duration:", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
 //subjects
 // GET /subjects - Fetch subjects based on user discipline and branch
 app.get('/subjects', checkAuthenticated, async (req, res) => {

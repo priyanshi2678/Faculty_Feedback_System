@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/styles2.css" rel="stylesheet">
+
+    <title>Manage Students</title>
+    <style>
+      .toggle-container{
+        display: flex;
+        align-items: center; 
+        justify-content: space-between;
+      }
+    </style>
+     
+  </head>
+  <%- include('partials/header', { activePage: 'students' }) %>
+  <body>
+    <div class="main">
+      <h1>Manage Students</h1>
+      <div class="card">
+          <div class="toggle-container">
+              <span class="label"><p> Stop Password Change</p></span>
+              <form action="/students/toggle" method="POST">
+                  <button type="submit" name="toggle">
+                      <%= hasChangedStatus ? 'Turn Off' : 'Turn On' %>
+                  </button>
+              </form>
+          </div>
+      </div>
+      <div class="card">
+        <h1>Upload Student Excel File</h1>
+        <p><strong>File Format:</strong> The file should contain the following columns:
+            <code>scholar_number, name, branch, semester, section</code>
+        </p>
+        <div class="form-group d-flex align-items-center">
+          <label class="mr-2">Sample Excel file:</label>
+          <a href="/downloads/sample_student.xlsx" download class="btn btn-secondary">
+             Download
+          </a>
+      </div>
+      
+        <form action="/students/upload" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="studentFile" accept=".xlsx, .xls" class="form-control-file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+    </div>
+    
+    <div class="card">
+      <form class="filter-form" action="/students" method="GET">
+          <!-- Discipline Dropdown -->
+          <label for="discipline" style="color: black;">Select Discipline:</label>
+          <select name="discipline_id" id="discipline" onchange="updateBranchAndYear()">
+              <option value="" <%= !discipline_id ? 'selected' : '' %>>All Disciplines</option>
+              <% disciplines.forEach(discipline => { %>
+                  <option value="<%= discipline.id %>" <%= discipline_id == discipline.id ? 'selected' : '' %>>
+                      <%= discipline.name %>
+                  </option>
+              <% }) %>
+          </select>
+  
+          <!-- Branch Dropdown -->
+          <label for="branch" style="color: black;">Select Branch:</label>
+          <select name="branch_name" id="branch">
+              <option value="" <%= !branch_name ? 'selected' : '' %>>All Branches</option>
+              <% branches.forEach(branch => { %>
+                  <option value="<%= branch.branch_name %>" <%= branch_name == branch.branch_name ? 'selected' : '' %>>
+                      <%= branch.branch_name %>
+                  </option>
+              <% }) %>
+          </select>
+  
+          <!-- Year Dropdown -->
+          <label for="year" style="color: black;">Select Year:</label>
+          <select name="year" id="year">
+              <option value="" <%= !year ? 'selected' : '' %>>Select Year</option>
+              <% years.forEach(y => { %>
+                  <option value="<%= y %>" <%= year == y ? 'selected' : '' %>>
+                      <%= y %>
+                  </option>
+              <% }) %>
+          </select>
+  
+          <!-- Section Dropdown -->
+          <label for="section" style="color: black;">Select Section:</label>
+          <select name="section" id="section">
+              <option value="" <%= !section ? 'selected' : '' %>>Select Section</option>
+              <% sections.forEach(s => { %>
+                  <option value="<%= s %>" <%= section == s ? 'selected' : '' %>>
+                      <%= s %>
+                  </option>
+              <% }) %>
+          </select>
+  
+          <button type="submit">Filter</button>
+      </form>
+  
+      <!-- Display Students Table -->
+      <% if (students.length > 0) { %>
+          <div class="table-container">
+              <table>
+                  <thead>
+                      <tr>
+                          <th>Scholar Number</th>
+                          <th>Name</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <% students.forEach(student => { %>
+                          <tr>
+                              <td><%= student.uniqueid %></td>
+                              <td><%= student.name %></td>
+                          </tr>
+                      <% }) %>
+                  </tbody>
+              </table>
+          </div>
+      <% } else { %>
+          <p>No students found.</p>
+      <% } %>
+  </div>
+  
+  <script>
+    async function updateBranchAndYear() {
+        const disciplineDropdown = document.getElementById('discipline');
+        if (!disciplineDropdown) {
+            console.error("Discipline dropdown not found!");
+            return;
+        }
+
+        const disciplineId = disciplineDropdown.value;
+        console.log("Selected Discipline ID:", disciplineId);
+
+        try {
+            // Fetch branches, discipline name, and duration for the selected discipline
+            const response = await fetch(`/api/branches?discipline_id=${disciplineId}`);
+            if (!response.ok) throw new Error("Network response was not ok");
+
+            const { branches, discipline_name, duration } = await response.json();
+            console.log("Received branches:", branches);
+            console.log("Received discipline name:", discipline_name);
+            console.log("Received duration:", duration);
+
+            // Update the branch dropdown
+            const branchSelect = document.getElementById('branch');
+            if (!branchSelect) {
+                console.error("Branch dropdown not found!");
+                return;
+            }
+            branchSelect.innerHTML = '<option value="">All Branches</option>';
+            branches.forEach(branch => {
+                branchSelect.innerHTML += `<option value="${branch.branch_name}">${branch.branch_name}</option>`;
+            });
+
+            // Update the year dropdown based on the duration
+            const yearSelect = document.getElementById('year');
+            if (!yearSelect) {
+                console.error("Year dropdown not found!");
+                return;
+            }
+            yearSelect.innerHTML = '<option value="">Select Year</option>';
+            for (let i = 1; i <= duration; i++) {
+                yearSelect.innerHTML += `<option value="${i}">${i}</option>`;
+            }
+
+            // Add an onchange event listener to the year dropdown
+            yearSelect.onchange = updateSections;
+
+        } catch (error) {
+            console.error("Error fetching branches:", error);
+        }
+    }
+
+    // Function to update the sections dropdown
+    function updateSections() {
+        const disciplineDropdown = document.getElementById('discipline');
+        const yearSelect = document.getElementById('year');
+        const sectionSelect = document.getElementById('section');
+
+        if (!disciplineDropdown || !yearSelect || !sectionSelect) {
+            console.error("Dropdowns not found!");
+            return;
+        }
+
+        const disciplineName = disciplineDropdown.options[disciplineDropdown.selectedIndex].text;
+        const selectedYear = yearSelect.value;
+        console.log("Selected Year:", selectedYear);
+
+        // Default sections
+        let sections = ['1', '2', '3'];
+
+        // Special case: If discipline is BTech and year is 1
+        if (disciplineName === "BTech" && selectedYear === "1") {
+            sections = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+        }
+
+        // Populate the sections dropdown
+        sectionSelect.innerHTML = '<option value="">Select Section</option>';
+        sections.forEach(section => {
+            sectionSelect.innerHTML += `<option value="${section}">${section}</option>`;
+        });
+    }
+</script>
+  </body>
+  <%- include('partials/footer') %>
+</html>
+    
+   
+    

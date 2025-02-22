@@ -212,6 +212,14 @@
                 <code>faculty_name , email , phone , discipline_id , branch_id
                 </code>
                 </p>
+
+                <div class="form-group d-flex align-items-center">
+                    <label class="mr-2">Sample Excel file:</label>
+                    <a href="/downloads/sample_faculty.xlsx" download class="btn btn-secondary">
+                       Download
+                    </a>
+                   </div>
+                   
             <form action="/faculty/upload" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <input type="file" name="facultyFile" accept=".xlsx, .xls" class="form-control-file" required>
