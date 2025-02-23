@@ -399,11 +399,8 @@ app.get('/students', checkAuthenticated, async (req, res) => {
         // Hardcoded section options
         let sections = [];
         if (req.query.discipline_id && req.query.year) {
-            if (req.query.year == '1') {
-                sections = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-            } else {
-                sections = ['1', '2', '3'];
-            }
+                sections = ['1', '2', '3','A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+            
         }
 
         // Fetch students based on filters and has_filled == 0
@@ -494,353 +491,532 @@ app.post('/students/toggle', async (req, res) => {
 
 
 app.post('/students/upload', async (req, res) => {
-    const db = getDB();
+  const db = getDB();
 
-    // Check if file is uploaded
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
-    }
+  // Check if file is uploaded
+  if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded.');
+  }
 
-    const studentFile = req.files.studentFile;
-    const uploadPath = path.join(__dirname, 'uploads', studentFile.name);
+  const studentFile = req.files.studentFile;
+  const uploadPath = path.join(__dirname, 'uploads', studentFile.name);
 
-    // Move the uploaded file to the server
-    studentFile.mv(uploadPath, async (err) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
+  // Move the uploaded file to the server
+  studentFile.mv(uploadPath, async (err) => {
+      if (err) {
+          return res.status(500).send(err);
+      }
 
-        try {
-            // Read the uploaded Excel file
-            const workbook = xlsx.readFile(uploadPath);
-            const sheetName = workbook.SheetNames[0];
-            const sheet = workbook.Sheets[sheetName];
-            const data = xlsx.utils.sheet_to_json(sheet);
+      try {
+          // Read the uploaded Excel file
+          const workbook = xlsx.readFile(uploadPath);
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const data = xlsx.utils.sheet_to_json(sheet);
 
-            // Process each row in the file
-            for (const row of data) {
-                const { scholar_number, name, branch, semester, section } = row;
+          // Process each row in the file
+          for (const row of data) {
+              const { scholar_number, name, discipline_id, branch, semester, section } = row;
 
-                // Calculate Year from Semester
-                const year = Math.ceil(semester / 2);
+              // Calculate Year from Semester
+              const year = Math.ceil(semester / 2);
 
-                // Fetch discipline_id from branchnew table
-                const [branchResult] = await db.execute(
-                    'SELECT discipline_id FROM branchnew WHERE branch_name = ?',
-                    [branch]
-                );
-                const discipline = branchResult[0];
+              // Insert student data into users table
+              await db.execute(
+                  `INSERT INTO users (uniqueid, name, role, has_filled, password, branch_name, 
+                      year, section, discipline_id, semester, is_allowed) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                  [
+                      scholar_number, name, 'Student', 0, scholar_number, branch,
+                      year, section, discipline_id, semester, 0
+                  ]
+              );
+          }
 
-                if (!discipline) {
-                    console.error(`Discipline not found for branch: ${branch}`);
-                    continue; // Skip this entry
-                }
+          // Delete the uploaded file after processing
+          fs.unlinkSync(uploadPath);
 
-                // Insert student data into users table
-                await db.execute(
-                    `INSERT INTO users (uniqueid, name, role, has_filled, password, branch_name, 
-                        year, section, discipline_id, semester, is_allowed) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                        scholar_number, name, 'student', 0, scholar_number, branch,
-                        year, section, discipline.discipline_id, semester, 0
-                    ]
-                );
-            }
-
-            // Delete the uploaded file after processing
-            fs.unlinkSync(uploadPath);
-
-            // Redirect to students page after success
-            res.redirect('/students');
-        } catch (err) {
-            console.error('Error processing the file:', err);
-            res.status(500).send('Error processing the file: ' + err.message);
-        }
-    });
+          // Redirect to students page after success
+          res.redirect('/students');
+      } catch (err) {
+          console.error('Error processing the file:', err);
+          res.status(500).send('Error processing the file: ' + err.message);
+      }
+  });
 });
 
-// app.get("/students/filter", async (req, res) => {
-//   const db = getDB();
-//   const { discipline_id, year, branch, section } = req.query;
-
-//   try {
-//       let query = `
-//           SELECT u.uniqueid, u.name
-//           FROM users u
-//           JOIN discipline d ON u.discipline_id = d.id
-//           WHERE 1=1
-//       `;
-//       let values = [];
-
-//       if (discipline_id) {
-//           query += " AND u.discipline_id = ?";
-//           values.push(discipline_id);
-//       }
-//       if (year) {
-//           query += " AND u.year = ?";
-//           values.push(year);
-//       }
-//       if (branch) {
-//           query += " AND u.branch_name = ?";
-//           values.push(branch);
-//       }
-//       if (section) {
-//           query += " AND u.section = ?";
-//           values.push(section);
-//       }
-
-//       // Execute Query
-//       const [students] = await db.execute(query, values);
-
-//       // Fetch filter dropdown data
-//       const [disciplines] = await db.execute("SELECT id, name, duration FROM discipline");
-//       const selectedDiscipline = disciplines.find(d => d.id == discipline_id);
-//       const selectedDisciplineDuration = selectedDiscipline ? selectedDiscipline.duration : null;
-//       const selectedDisciplineName = selectedDiscipline ? selectedDiscipline.name : null;
-//       const [branches] = await db.execute("SELECT branch_name FROM branchnew WHERE discipline_id = ?", [discipline_id || 0]);
-
-//       // Ensure discipline_id is properly set (convert null/undefined to an empty string)
-//       res.render("students", { 
-//           disciplines, 
-//           branches, 
-//           students, 
-//           selectedDisciplineDuration, 
-//           selectedDisciplineName, 
-//           discipline_id: discipline_id || "",  // Ensure it's defined
-//           year: year || "", 
-//           branch: branch || "", 
-//           section: section || "" 
-//       });
-//   } catch (error) {
-//       console.error("Error filtering students:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
-// app.get("/get-discipline-duration", async (req, res) => {
-//   const db = getDB();
-//   const { discipline_id } = req.query;
-
-//   try {
-//       const [rows] = await db.execute("SELECT duration FROM discipline WHERE id = ?", [discipline_id]);
-//       if (rows.length > 0) {
-//           res.json({ duration: rows[0].duration });
-//       } else {
-//           res.json({ duration: 0 });
-//       }
-//   } catch (error) {
-//       console.error("Error fetching discipline duration:", error);
-//       res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
 
 //subjects
 // GET /subjects - Fetch subjects based on user discipline and branch
 app.get('/subjects', checkAuthenticated, async (req, res) => {
+
   const db = getDB();
+
   const user = req.user; // Get the authenticated user's details
+
   const userDisciplineId = req.session.adminDetails.discipline || null;
+
   const userBranch = req.session.adminDetails.branch_name || null;
+
   let userBranchId = null;
 
+
+
   if (userBranch) {
+
     // Get branch ID from branch name
+
     const [branchResult] = await db.execute('SELECT branch_id FROM branchnew WHERE branch_name = ?', [userBranch]);
+
     userBranchId = branchResult.length ? branchResult[0].branch_id : null;
+
   }
 
+
+
   try {
+
     let disciplinesResult = [];
+
     let branchesResult = [];
+
     let subjectsResult = [];
 
+
+
     if (userDisciplineId && userBranchId) {
+
       // Fetch data only for the user's discipline and branch
+
       [disciplinesResult] = await db.execute('SELECT * FROM discipline WHERE id = ?', [userDisciplineId]);
+
       [branchesResult] = await db.execute('SELECT * FROM branchnew WHERE branch_id = ?', [userBranchId]);
+
       [subjectsResult] = await db.execute(`
-        SELECT s.subject_id, s.name, d.name AS discipline_name, b.branch_name
+
+        SELECT s.subject_id, s.name,s.subject_code,s.semester, d.name AS discipline_name, b.branch_name
+
         FROM subjectnew s
+
         JOIN branchnew b ON s.branch_id = b.branch_id
+
         JOIN discipline d ON b.discipline_id = d.id
+
         WHERE d.id = ? AND b.branch_id = ?`, 
+
         [userDisciplineId, userBranchId]);
+
     } else if (userDisciplineId) {
+
       // User has only discipline; show all branches and subjects for that discipline
+
       [disciplinesResult] = await db.execute('SELECT * FROM discipline WHERE id = ?', [userDisciplineId]);
+
       [branchesResult] = await db.execute('SELECT * FROM branchnew WHERE discipline_id = ?', [userDisciplineId]);
+
       [subjectsResult] = await db.execute(`
-        SELECT s.subject_id, s.name, d.name AS discipline_name, b.branch_name
+
+        SELECT s.subject_id, s.name,s.subject_code,s.semester, d.name AS discipline_name, b.branch_name
+
         FROM subjectnew s
+
         JOIN branchnew b ON s.branch_id = b.branch_id
+
         JOIN discipline d ON b.discipline_id = d.id
+
         WHERE d.id = ?`, [userDisciplineId]);
+
     } else if (userBranchId) {
+
       // User has only branch; show all disciplines and subjects for that branch
+
       [branchesResult] = await db.execute('SELECT * FROM branchnew WHERE branch_id = ?', [userBranchId]);
+
       [disciplinesResult] = await db.execute(`
+
         SELECT * FROM discipline WHERE id IN (
+
           SELECT discipline_id FROM branchnew WHERE branch_id = ?
+
         )`, [userBranchId]);
+
       [subjectsResult] = await db.execute(`
-        SELECT s.subject_id, s.name, d.name AS discipline_name, b.branch_name
+
+        SELECT s.subject_id, s.name,s.subject_code,s.semester, d.name AS discipline_name, b.branch_name
+
         FROM subjectnew s
+
         JOIN branchnew b ON s.branch_id = b.branch_id
+
         JOIN discipline d ON b.discipline_id = d.id
+
         WHERE b.branch_id = ?`, [userBranchId]);
+
     } else {
+
       // Both discipline_id and branch_id are null; show all data
+
       [disciplinesResult] = await db.execute('SELECT * FROM discipline');
+
       [branchesResult] = await db.execute('SELECT * FROM branchnew');
+
       [subjectsResult] = await db.execute(`
-        SELECT s.subject_id, s.name, d.name AS discipline_name, b.branch_name
+
+        SELECT s.subject_id, s.name,s.subject_code,s.semester, d.name AS discipline_name, b.branch_name
+
         FROM subjectnew s
+
         JOIN branchnew b ON s.branch_id = b.branch_id
+
         JOIN discipline d ON b.discipline_id = d.id
+
       `);
+
+      const [nullBranchSubjects] = await db.execute(`
+
+        SELECT s.subject_id, s.name,s.subject_code,s.semester, d.name AS discipline_name, '' AS branch_name 
+
+        FROM subjectnew s ,discipline d
+
+        WHERE s.discipline_id = d.id AND s.branch_id IS NULL`
+
+        );
+
+      
+
+      // Append subjects with NULL branch_id to the main result
+
+      subjectsResult.push(...nullBranchSubjects);
+
     }
+
+
 
     // Render the page with the results
+
     res.render('subjects', {
+
       disciplines: disciplinesResult, // Disciplines based on the user's data
+
       branches: branchesResult, // Branches based on the user's data
+
       subjects: subjectsResult, // Subjects based on the user's data
+
     });
+
   } catch (err) {
+
     console.error(err);
+
     res.send("Error " + err);
+
   }
+
 });
+
+
 
 // POST /subjects/add - Add a new subject
+
 app.post('/subjects/add', async (req, res) => {
+
   const db = getDB();
+
   const { subject_name } = req.body;
+
   const branch_id = req.body.branch_id;
+
   const discipline_id = req.body.discipline_id;
+
   const subject_code=req.body.subject_code;
 
+  const subject_semester=req.body.subject_semester;
+
+
+
   try {
-    await db.execute('INSERT INTO subjectnew (discipline_id, branch_id, name, subject_code) VALUES (?, ?, ?,?)', 
-      [discipline_id, branch_id, subject_name,subject_code]);
+
+    await db.execute('INSERT INTO subjectnew (discipline_id, branch_id, name, subject_code,semester) VALUES (?, ?, ?,?,?)', 
+
+      [discipline_id, branch_id, subject_name,subject_code,subject_semester]);
+
     res.redirect('/subjects');
+
   } catch (err) {
+
     console.error(err);
+
     res.send("Error " + err);
+
   }
+
 });
+
+
 
 // POST /subjects/delete/:id - Delete a subject
+
 app.post('/subjects/delete/:id', async (req, res) => {
+
   const { id } = req.params;
+
   const db = getDB();
 
+
+
   try {
+
     await db.execute('DELETE FROM subjectnew WHERE subject_id = ?', [id]);
+
     res.redirect('/subjects');
+
   } catch (err) {
+
     console.error("Error during deletion:", err);
+
     res.send("Error " + err);
+
   }
+
 });
+
+
 
 // GET /subjects/edit/:id - Fetch subject details for editing
+
 app.get('/subjects/edit/:id', checkAuthenticated, async (req, res) => {
+
   const subjectId = req.params.id;
+
   const db = getDB();
 
+
+
   try {
+
     const [subjectResult] = await db.execute(`
-      SELECT s.subject_id AS id, s.name AS subject_name, d.name AS discipline_name, b.branch_name, s.discipline_id, s.branch_id
+
+      SELECT s.subject_id AS id, s.subject_code AS code, s.semester AS semester, 
+
+             s.name AS subject_name, d.name AS discipline_name, 
+
+             COALESCE(b.branch_name, '') AS branch_name, 
+
+             s.discipline_id, s.branch_id
+
       FROM subjectnew s
-      JOIN branchnew b ON s.branch_id = b.branch_id
+
+      LEFT JOIN branchnew b ON s.branch_id = b.branch_id
+
       JOIN discipline d ON s.discipline_id = d.id
+
       WHERE s.subject_id = ?`, [subjectId]);
+
     
+
     if (subjectResult.length === 0) {
+
       return res.send('Subject not found');
+
     }
+
+
 
     const [disciplinesResult] = await db.execute('SELECT * FROM discipline');
+
     const [branchesResult] = await db.execute('SELECT * FROM branchnew');
 
+
+
     res.render('edit_subject', {
+
       subject: subjectResult[0],
+
       disciplines: disciplinesResult,
+
       branches: branchesResult
+
     });
+
   } catch (err) {
+
     console.error(err);
+
     res.send("Error " + err);
+
   }
+
 });
 
-// POST /subjects/edit/:id - Update subject details
+
+
+
+
 app.post('/subjects/edit/:id', async (req, res) => {
-  const subjectId = req.params.id;
+
   const db = getDB();
-  const { subject_name, branch_id } = req.body;
+
+  let { subject_name, branch_id, subject_code, subject_semester } = req.body;
+
+  const subjectId = req.params.id;
+
+  
+
+  console.log(req.body);
+
+
+
+  // Convert empty branch_id to NULL for SQL query
+
+  if (!branch_id || branch_id === '') {
+
+    branch_id = null;
+
+  }
+
+
 
   try {
+
     await db.execute(`
+
       UPDATE subjectnew
-      SET name = ?, branch_id = ?
+
+      SET name = ?, branch_id = ?, subject_code = ?, semester = ?
+
       WHERE subject_id = ?`, 
-      [subject_name, branch_id, subjectId]);
+
+      [subject_name, branch_id, subject_code, subject_semester, subjectId]);
+
+      
+
     res.redirect('/subjects');
+
   } catch (err) {
+
     console.error(err);
+
     res.send("Error " + err);
+
   }
+
 });
+
+
+
+
 
 // POST /subjects/upload - Upload subject data
+
 app.post('/subjects/upload', async (req, res) => {
+
   const db = getDB();
+
   if (!req.files || Object.keys(req.files).length === 0) {
+
     return res.status(400).send('No files were uploaded.');
+
   }
 
+
+
   const subjectFile = req.files.subjectFile;
+
   const uploadPath = path.join(__dirname, 'uploads', subjectFile.name);
 
+
+
   subjectFile.mv(uploadPath, async (err) => {
+
     if (err) {
+
       return res.status(500).send(err);
+
     }
+
+
 
     try {
+
       const workbook = xlsx.readFile(uploadPath);
+
       const sheetName = workbook.SheetNames[0];
+
       const sheet = workbook.Sheets[sheetName];
+
       const data = xlsx.utils.sheet_to_json(sheet);
 
+
+
       for (const row of data) {
-        const { name,subject_code, discipline_name, branch_name } = row;
+
+        const { name, subject_code, semester, discipline_name, branch_name } = row;
+
+
+
+        // Get Discipline ID
 
         const [disciplineResult] = await db.execute('SELECT id FROM discipline WHERE name = ?', [discipline_name]);
-        const discipline = disciplineResult[0];
 
-        const [branchResult] = await db.execute('SELECT branch_id FROM branchnew WHERE branch_name = ? AND discipline_id = ?', [branch_name, discipline.id]);
-        const branch = branchResult[0];
+        const discipline = disciplineResult.length ? disciplineResult[0] : null;
 
-        if (discipline && branch) {
-          await db.execute('INSERT INTO subjectnew (name,subject_code, discipline_id, branch_id) VALUES (?, ?, ?,?)', 
-            [name,subject_code, discipline.id, branch.branch_id]);
-        } else {
-          console.error(`Discipline or Branch not found for subject: ${name}`);
+
+
+        let branchId = null;
+
+        if (branch_name) {
+
+          const [branchResult] = await db.execute(
+
+            'SELECT branch_id FROM branchnew WHERE branch_name = ? AND discipline_id = ?',
+
+            [branch_name, discipline ? discipline.id : null]
+
+          );
+
+          branchId = branchResult.length ? branchResult[0].branch_id : null;
+
         }
+
+
+
+        if (discipline) {
+
+          await db.execute(
+
+            'INSERT INTO subjectnew (name, subject_code, semester, discipline_id, branch_id) VALUES (?, ?, ?, ?, ?)', 
+
+            [name, subject_code, semester, discipline.id, branchId]
+
+          );
+
+        } else {
+
+          console.error(`Discipline not found for subject: ${name}`);
+
+        }
+
       }
 
+
+
       fs.unlinkSync(uploadPath);
+
       res.redirect('/subjects');
+
     } catch (err) {
+
       console.error(err);
+
       res.status(500).send('Error processing the file: ' + err.message);
+
     }
+
   });
+
 });
+
+
 
 
 
@@ -1361,6 +1537,62 @@ app.get('/mapping', checkAuthenticated, async (req, res) => {
     console.error(error);
     res.status(500).send('Server error');
   }
+});
+
+app.post('/api/mapping/facultySubjectUpload', async (req, res) => {
+  if (!req.files || !req.files.facultyFile) {
+    return res.status(400).send('No files were uploaded.');
+  }
+
+  const facultyFile = req.files.facultyFile;
+  const uploadPath = path.join(__dirname, 'uploads', facultyFile.name);
+
+  facultyFile.mv(uploadPath, async (err) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+
+      try {
+          const workbook = xlsx.readFile(uploadPath);
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const data = xlsx.utils.sheet_to_json(sheet);
+
+          // console.log('Uploaded Data:', data);
+
+          // Check for missing values
+          for (const item of data) {
+              if (!item.faculty_id || !item.subject_id || !item.section) {
+                  fs.unlinkSync(uploadPath);
+                  return res.json({ success: false, message: 'File contains empty faculty_id, subject_id, or section.' });
+              }
+          }
+
+          // Insert into MySQL database
+          const insertQuery = `
+              INSERT IGNORE INTO subject_faculty (faculty_id, subject_id, section, is_elective)
+              VALUES (?, ?, ?, ?);
+          `;
+
+          const db = getDB();
+          for (const item of data) {
+              await db.execute(insertQuery, [
+                  item.faculty_id,
+                  item.subject_id,
+                  item.section,
+                  item.is_elective
+              ]);
+          }
+
+          fs.unlinkSync(uploadPath);
+          return res.status(200).send('Faculty-subject data uploaded successfully.');
+
+      } catch (err) {
+          console.error('Error processing file:', err);
+          fs.unlinkSync(uploadPath);
+          res.status(500).send('Error processing the file: ' + err.message);
+      }
+  });
 });
 
 // Route to handle student-subject mapping upload
@@ -1994,38 +2226,6 @@ app.get('/teacher-remarks', checkAuthenticated, async (req, res) => {
 
 // const deepseekService = require('./services/deepseekService'); // Import the service
 
-// app.post('/summarize-feedback', checkAuthenticated, async (req, res) => {
-//   const db = getDB();
-//   const { facultyId, feedbackYear, semesterType } = req.body;
-
-//   try {
-//     // Fetch feedback responses for the selected faculty
-//     const feedbackQuery = `
-//       SELECT f.response 
-//       FROM responses f
-//       WHERE f.fac_id = ? AND f.feedback_year = ?
-//       ${semesterType === 'Odd' ? 'AND (f.semester % 2) = 1' : ''}
-//       ${semesterType === 'Even' ? 'AND (f.semester % 2) = 0' : ''}
-//     `;
-//     const [feedbackResult] = await db.execute(feedbackQuery, [facultyId, feedbackYear]);
-//     const feedbackResponses = feedbackResult.map(row => row.response).join('\n');
-
-//     // If no feedback is found, return an error
-//     if (!feedbackResponses) {
-//       return res.status(404).json({ error: 'No feedback found for the selected faculty.' });
-//     }
-
-//     // Use DeepSeek to summarize the feedback
-//     const summarizedFeedback = await aiServices.summarizeFeedback(feedbackResponses);
-
-//     // Return the summarized feedback and suggestions
-//     res.json({ summary: summarizedFeedback });
-//   } catch (err) {
-//     console.error('Error summarizing feedback:', err);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
-
 app.post('/summarize-feedback', checkAuthenticated, async (req, res) => {
   const db = getDB();
   const { facultyId, feedbackYear, semesterType } = req.body;
@@ -2040,34 +2240,66 @@ app.post('/summarize-feedback', checkAuthenticated, async (req, res) => {
       ${semesterType === 'Even' ? 'AND (f.semester % 2) = 0' : ''}
     `;
     const [feedbackResult] = await db.execute(feedbackQuery, [facultyId, feedbackYear]);
-    const feedbackResponses = feedbackResult.map(row => row.response);
+    const feedbackResponses = feedbackResult.map(row => row.response).join('\n');
 
     // If no feedback is found, return an error
     if (!feedbackResponses) {
       return res.status(404).json({ error: 'No feedback found for the selected faculty.' });
     }
-    console.log(feedbackResponses);
-    // Use DeepSeek to summarize the feedback
-    const response = await axios.post('http://127.0.0.1:5000/analyze-feedback', {
-      feedback: feedbackResponses
-    });
-    console.log(response.data);
-    const result = {
-      negative: response.data.Negative || 0,
-      neutral: response.data.Neutral || 0,
-      positive: response.data.Positive || 0,
-      improvements_needed: response.data.improvements_needed || 0,
-      suggestions: response.data.suggestions || [],
-      total_feedbacks: response.data.total_feedbacks || 0
-    };
 
-    // Send the result to the frontend
-    return res.json(result);
+    // Use DeepSeek to summarize the feedback
+    const summarizedFeedback = await aiServices.summarizeFeedback(feedbackResponses);
+
+    // Return the summarized feedback and suggestions
+    res.json({ summary: summarizedFeedback });
   } catch (err) {
     console.error('Error summarizing feedback:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// app.post('/summarize-feedback', checkAuthenticated, async (req, res) => {
+//   const db = getDB();
+//   const { facultyId, feedbackYear, semesterType } = req.body;
+
+//   try {
+//     // Fetch feedback responses for the selected faculty
+//     const feedbackQuery = `
+//       SELECT f.response 
+//       FROM responses f
+//       WHERE f.fac_id = ? AND f.feedback_year = ?
+//       ${semesterType === 'Odd' ? 'AND (f.semester % 2) = 1' : ''}
+//       ${semesterType === 'Even' ? 'AND (f.semester % 2) = 0' : ''}
+//     `;
+//     const [feedbackResult] = await db.execute(feedbackQuery, [facultyId, feedbackYear]);
+//     const feedbackResponses = feedbackResult.map(row => row.response);
+
+//     // If no feedback is found, return an error
+//     if (!feedbackResponses) {
+//       return res.status(404).json({ error: 'No feedback found for the selected faculty.' });
+//     }
+//     console.log(feedbackResponses);
+//     // Use DeepSeek to summarize the feedback
+//     const response = await axios.post('http://127.0.0.1:5000/analyze-feedback', {
+//       feedback: feedbackResponses
+//     });
+//     console.log(response.data);
+//     const result = {
+//       negative: response.data.Negative || 0,
+//       neutral: response.data.Neutral || 0,
+//       positive: response.data.Positive || 0,
+//       improvements_needed: response.data.improvements_needed || 0,
+//       suggestions: response.data.suggestions || [],
+//       total_feedbacks: response.data.total_feedbacks || 0
+//     };
+
+//     // Send the result to the frontend
+//     return res.json(result);
+//   } catch (err) {
+//     console.error('Error summarizing feedback:', err);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
 
 
 

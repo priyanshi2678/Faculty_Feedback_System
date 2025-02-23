@@ -1,30 +1,69 @@
-body{
-  background-color: #bc89fc;
-    background-size: cover;
-    background-position: center;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif; /* Example font family */
-    color: rgba(255, 255, 255, 0.371); /* Example text color */
+/* Global Styles */
+/* Global Styles */
+body {
+  background: black; /* Deep black to dark gray */
+  background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  color: #ffffff; /* White text for contrast */
+  min-height: 100vh; /* Ensures gradient covers full viewport height */
 }
+
+/* Container */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.176); /* Darker semi-transparent black */
+  backdrop-filter: blur(12px); /* Smooth frosted glass effect */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8); /* Deeper shadow for contrast */
+  animation: fadeIn 0.5s ease;
+}
+
+.required {
+  color: red;
+  font-weight: bold;
+}
+
+
+/* Headings */
+h1 {
+  margin-top: 0;
+  font-size: 32px;
+  color: #ffffff; /* White text */
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+h5 {
+  color: #ffffff; /* White text */
+  margin: 10px 0;
+  font-size: 14.5px;
+}
+
+/* Labels */
+label {
+ 
+  color: #ffffff; /* White text */
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Bullet Points (Rating System) */
 .bullet-points {
   list-style-type: none;
   padding: 0;
   display: grid;
-  gap: 10px; /* Space between columns and rows */
-  row-gap: 15px; /* Increases spacing between rows */
+  gap: 10px;
+  row-gap: 15px;
   margin-bottom: 10px;
   margin-top: 6px;
-  justify-items: center; /* Center items in grid */
-}
-
-/* Default: 10 items in one row */
-.bullet-points {
+  justify-items: center;
   grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: auto;
 }
 
-/* For small screens (phones), 5 in one row */
 @media screen and (max-width: 768px) {
   .bullet-points {
       grid-template-columns: repeat(5, 1fr);
@@ -32,129 +71,112 @@ body{
   }
 }
 
-/* Active bullet point styling */
-.bullet-points li.active {
-  border-color: #9948fc;
-  box-shadow: 0 0 5px #9948fc;
-  transform: scale(1.2);
-  transition: transform 0.2s ease-in-out;
-}
-
-
-
-
-      .bullet-points li {
-          color:black;
-          background-color: rgba(255, 255, 255, 0.573);
-          font-weight: bold;
-          cursor: pointer;
-          padding: 10px;
-          border-radius: 50%;
-          border: 2px solid #ccc;
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 1px;
-      }
-
-
-/* Dynamically set bullet colors (red to green) */
-.bullet-points li:nth-child(1) { background-color: #ff4d4d; } /* Worst */
-.bullet-points li:nth-child(2) { background-color: #ff704d; }
-.bullet-points li:nth-child(3) { background-color: #ff944d; }
-.bullet-points li:nth-child(4) { background-color: #ffb94d; }
-.bullet-points li:nth-child(5) { background-color: #ffdd4d; }
-.bullet-points li:nth-child(6) { background-color: #d4ff4d; }
-.bullet-points li:nth-child(7) { background-color: #a6ff4d; }
-.bullet-points li:nth-child(8) { background-color: #79ff4d; }
-.bullet-points li:nth-child(9) { background-color: #4dff4d; }
-.bullet-points li:nth-child(10) { background-color: #33cc33; } /* Best */
-
-.bullet-points li:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-/* Button - Gradient from Red to Green */
-/* More specific rule to avoid affecting other buttons */
-button:not(.logout-button):not(.next-button):not(.submit-button) {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(90deg, #ff4747, #4caf50);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
+.bullet-points li {
+  color: #ffffff; /* White text */
+  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
   font-weight: bold;
-  transition: background 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1px;
+  transition: all 0.3s ease;
 }
 
-button:not(.logout-button):not(.next-button):not(.submit-button):hover {
-  background: linear-gradient(90deg, #e63939, #3e8e41);
-  transform: scale(1.05);
+/* Shades of Purple for Bullet Points */
+.bullet-points li:nth-child(1) { background-color: #f8f2ff; } /* Lightest */
+.bullet-points li:nth-child(2) { background-color: #f3e5f5; }
+.bullet-points li:nth-child(3) { background-color: #e1bee7; }
+.bullet-points li:nth-child(4) { background-color: #cf94fc; }
+.bullet-points li:nth-child(5) { background-color: #bb86fc; } /* Base color */
+.bullet-points li:nth-child(6) { background-color: #ab47bc; }
+.bullet-points li:nth-child(7) { background-color: #9c27b0; }
+.bullet-points li:nth-child(8) { background-color: #7c43bd; }
+.bullet-points li:nth-child(9) { background-color: #5e35b1; }
+.bullet-points li:nth-child(10) { background-color: #4a148c; } /* Darkest */
+
+
+
+.bullet-points li:nth-child(1),
+.bullet-points li:nth-child(2) {
+  color: black; /* Black text for better contrast on light backgrounds */
+}
+.bullet-points li:nth-child(3),
+.bullet-points li:nth-child(4) {
+  color: rgb(49, 48, 48); /* Black text for better contrast on light backgrounds */
+}
+.bullet-points li:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-
-      .next-button, .submit-button {
-          background-color: #8520ff;
-          color: white;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          margin-top: 10px;
-      }
-
-      .next-button:hover, .submit-button:hover {
-          background-color: #9948fc;
-      }
-      h5 {
-      color: #000000;
-    }
-    h4 {
-      color: #000;
-    }
-    h1{
-      color:rgb(0, 0, 0);
-    }
-    .logout-form {
-          margin-left: auto;
-      }
-
-      .logout-button {
-          background-color: red;
-          color: white;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 16px;
-          font-weight: bold;
-      }
-      .logout-button:hover {
-          background-color: darkred;
-      }
-      textarea {
-  width: 100%;
-  max-width: 100%; /* Prevents overflow */
-  box-sizing: border-box; /* Ensures padding is included in width */
-  resize: vertical; /* Allows resizing only vertically */
+.bullet-points li.active {
+  border-color: #ffffff; /* White border for active state */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transform: scale(1.2);
 }
 
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.744);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.5s ease;
-  opacity: 0.9;
+/* Buttons */
+.next-button, .submit-button {
+  background-color: #7c43bd; /* Medium purple */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
+.next-button:hover, .submit-button:hover {
+  background-color: #ad50e7; /* Darker purple on hover */
+}
+
+button-container {
+  display: flex;
+  justify-content: flex-end; /* Aligns button to the right */
+}
+.logout-button {
+  background-color: #eb3835df; /* Red for logout */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #ad50e7;
+  color: #ffffff;
+}
+
+/* Textarea */
+textarea {
+  width: 95%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #7c43bd; /* Purple border */
+  background-color: rgb(229, 223, 223); /* Semi-transparent white */
+  color: #000000; /* White text */
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+textarea:focus {
+  border-color: #ab47bc; /* Lighter purple on focus */
+  outline: none;
+}
+
+/* Animations */
 @keyframes fadeIn {
   from {
       opacity: 0;
@@ -166,54 +188,6 @@ button:not(.logout-button):not(.next-button):not(.submit-button):hover {
   }
 }
 
-h1 {
-  margin-top: 0;
-  font-size: 32px;
-  color: rgb(0, 0, 0);
-  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
-}
-
-h4 {
-  color: rgb(0, 0, 0);
-}
-
-label {
-  font-weight: bold;
-  color: rgb(6, 6, 6);
-  display: block;
-  margin-bottom: 5px;
-  transition: color 0.3s ease;
-}
-
-textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  resize: vertical;
-  transition: border-color 0.3s ease;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.faculty-feedback {
-  animation: slideIn 0.5s ease;
-}
-
 @keyframes slideIn {
   from {
       opacity: 0;
@@ -223,4 +197,8 @@ button:hover {
       opacity: 1;
       transform: translateX(0);
   }
+}
+
+.faculty-feedback {
+  animation: slideIn 0.5s ease;
 }

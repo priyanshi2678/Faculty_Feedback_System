@@ -254,63 +254,109 @@
         <button id="summarizeButton" class="btn btn-primary">Summarize Feedback</button>
         <div id="summaryResult" class="mt-3" style="display: none;">
             <h4>Summary of Feedback:</h4>
-            
-            <p id="negativeFeedback"></p>
+        
+            <!-- Spinner -->
+            <div id="loadingSpinner" style="display: none; text-align: center;">
+                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                <p>Generating summary...</p>
+            </div>
+            <p id="summaryText"></p>
+            <!-- <p id="negativeFeedback"></p>
             <p id="neutralFeedback"></p>
             <p id="positiveFeedback"></p>
             <p id="improvementsNeeded"></p>
             <p id="totalFeedbacks"></p>
-          
+        
             <h5>Suggestions:</h5>
-            <ul id="suggestionsList"></ul>
-          </div>
+            <ul id="suggestionsList"></ul> -->
+        </div>
+        
     </div>
 
 </body>
 <script>
-   document.getElementById('summarizeButton').addEventListener('click', async () => {
-  const facultyId = '<%= facultyId %>';  // Ensure these values are passed correctly from the backend
-  const feedbackYear = '<%= feedbackYear %>';
-  const semesterType = '<%= semesterType %>';
+    document.getElementById('summarizeButton').addEventListener('click', async () => {
+    const facultyId = '<%= facultyId %>';
+    const feedbackYear = '<%= feedbackYear %>';
+    const semesterType = '<%= semesterType %>';
 
-  try {
-    const response = await fetch('/summarize-feedback', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ facultyId, feedbackYear, semesterType }),
-    });
+    // Show the summary section & spinner
+    document.getElementById('summaryResult').style.display = 'block';
+    document.getElementById('loadingSpinner').style.display = 'block';
 
-    const data = await response.json();
+    try {
+        const response = await fetch('/summarize-feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ facultyId, feedbackYear, semesterType }),
+        });
 
-    if (data.error) {
-      alert(data.error);
-    } else {
-      // Update feedback breakdown
-      document.getElementById('negativeFeedback').textContent = `Negative: ${data.negative}`;
-      document.getElementById('neutralFeedback').textContent = `Neutral: ${data.neutral}`;
-      document.getElementById('positiveFeedback').textContent = `Positive: ${data.positive}`;
-      document.getElementById('improvementsNeeded').textContent = `Improvements Needed: ${data.improvements_needed}`;
-      document.getElementById('totalFeedbacks').textContent = `Total Feedbacks: ${data.total_feedbacks}`;
+        const data = await response.json();
 
-      // Display suggestions
-      const suggestionsList = document.getElementById('suggestionsList');
-      suggestionsList.innerHTML = ''; // Clear existing suggestions
-      data.suggestions.forEach(suggestion => {
-        const listItem = document.createElement('li');
-        listItem.textContent = suggestion;
-        suggestionsList.appendChild(listItem);
-      });
+        // Hide spinner
+        document.getElementById('loadingSpinner').style.display = 'none';
 
-      // Display the summary results section
-      document.getElementById('summaryResult').style.display = 'block';
+        if (data.error) {
+            alert(data.error);
+            document.getElementById('summaryResult').style.display = 'none'; // Hide summary if there's an error
+        } else {
+            // Display the summary response
+            document.getElementById('summaryText').textContent = data.summary;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+        document.getElementById('loadingSpinner').style.display = 'none';
     }
-  } catch (error) {
-    console.error('Error summarizing feedback:', error);
-    alert('Failed to summarize feedback. Please try again.');
-  }
 });
+
+//    document.getElementById('summarizeButton').addEventListener('click', async () => {
+//     const facultyId = '<%= facultyId %>';
+//     const feedbackYear = '<%= feedbackYear %>';
+//     const semesterType = '<%= semesterType %>';
+
+//     // Show summary section & spinner
+//     document.getElementById('summaryResult').style.display = 'block';
+//     document.getElementById('loadingSpinner').style.display = 'block';
+
+//     try {
+//         const response = await fetch('/summarize-feedback', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({ facultyId, feedbackYear, semesterType }),
+//         });
+
+//         const data = await response.json();
+
+//         if (data.error) {
+//             alert(data.error);
+//         } else {
+//             // Hide spinner and display the results
+//             document.getElementById('loadingSpinner').style.display = 'none';
+
+//             document.getElementById('negativeFeedback').textContent = Negative: ${data.negative};
+//             document.getElementById('neutralFeedback').textContent = Neutral: ${data.neutral};
+//             document.getElementById('positiveFeedback').textContent = Positive: ${data.positive};
+//             document.getElementById('improvementsNeeded').textContent = Improvements Needed: ${data.improvements};
+//             document.getElementById('totalFeedbacks').textContent = Total Feedbacks: ${data.total};
+
+//             // Populate suggestions list
+//             const suggestionsList = document.getElementById('suggestionsList');
+//             suggestionsList.innerHTML = '';
+//             data.suggestions.forEach(suggestion => {
+//                 const li = document.createElement('li');
+//                 li.textContent = suggestion;
+//                 suggestionsList.appendChild(li);
+//             });
+//         }
+//     } catch (error) {
+//         alert('An error occurred. Please try again.');
+//     } finally {
+//         // Ensure the spinner is hidden after the process
+//         document.getElementById('loadingSpinner').style.display = 'none';
+//     }
+// });
+
 
   </script>
 <%- include('partials/footer') %>

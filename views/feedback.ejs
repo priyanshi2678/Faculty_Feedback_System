@@ -9,11 +9,9 @@
 <body>
     <div class="container">
         <h1 align="center">Feedback Page</h1>
-        <form action="/logout?_method=DELETE" method="POST" class="logout-form">
-            <button type="submit" class="logout-button">Logout</button>
-        </form>
+        
         <form id="feedbackForm" action="/submit-feedback" method="post">
-            <h5>Note: <i>10</i> will be considered as <b><i>best</i></b> and <i>1</i> will be considered as <b><i>worst</i></b>.</h5>
+            <h5 style="color: #BB86FC">Note: <i>10</i> will be considered as <b><i>best</i></b> and <i>1</i> will be considered as <b><i>worst</i></b>.</h5>
 
             <input type="hidden" name="uniqueId" id="uniqueId" value="<%= uniqueId %>">
             <input type="hidden" name="faculties" id="faculties" value='<%= JSON.stringify(faculties) %>'>
@@ -25,7 +23,7 @@
 
                     <% for (let i = 1; i <= 10; i++) { %>
                         <h5><%= questionsArray[i-1] %></h5>
-                        <div style="display: flex; width: 100%; font-style: italic; font-weight: bold; color: red;">
+                        <div style="display: flex; width: 100%; font-style: italic; font-weight: bold; color: #BB86FC;">
                             <span style="flex: 1; text-align: left;">Worst</span> 
                             <!-- <span style="flex: 1; text-align: right;">Best</span> -->
                         </div>
@@ -40,13 +38,13 @@
                             <% } %>
                         </ul>
                         <input type="hidden" name="selectedPoint<%= index %>-<%= i %>" id="selectedPoint<%= index %>-<%= i %>" value="0">
-                        <div style="display: flex; width: 100%; font-style: italic; font-weight: bold; color: green;">
+                        <div style="display: flex; width: 100%; font-style: italic; font-weight: bold;color: #BB86FC;">
                             <!-- <span style="flex: 1; text-align: left;">Worst</span>  -->
                             <span style="flex: 1; text-align: right; padding-right: 15px;">Best</span>
                         </div>
                     <% } %>
 
-                    <label for="remark<%= index %>">Remark:</label><br>
+                    <label for="remark<%= index %>">Remark: <span class="required">*</span></label><br>
                     <textarea id="remark<%= index %>" name="remark<%= index %>" rows="4" cols="50"></textarea><br><br>
 
                     <% if (index === faculties.length - 1) { %>
@@ -54,8 +52,14 @@
                     <% } else { %>
                         <button type="button" class="next-button" onclick="showNextFaculty(<%= index %>)">Next</button>
                     <% } %>
+                    
                 </div>
+                
             <% }); %>
+        </form>
+        <form action="/logout?_method=DELETE" method="POST" class="logout-form">
+            <button type="submit" class="logout-button">Logout</button>
+
         </form>
     </div>
 
@@ -107,6 +111,10 @@
         }
 
         document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+                if (event.submitter && event.submitter.id !== 'submitButton') {
+                  return; // Allow logout without validation
+                }
+            
             if (!validateFeedback(currentIndex)) {
                 event.preventDefault();
                 alert("Please provide feedback for all questions and enter a remark before submitting.");

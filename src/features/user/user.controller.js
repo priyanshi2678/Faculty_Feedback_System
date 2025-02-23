@@ -71,14 +71,22 @@ export default class UserController {
             }
             else{
               if(user.has_filled==false){
-                const branch_name = user.branch_name;
-                const uniqueId=user.uniqueid;
-                const semester=user.semester;
-                const discipline_id=user.discipline_id;
-                  const year = user.year;
-                  const subjects = await this.branchRepo.fetchSubjects(semester,discipline_id,uniqueId,branch_name, year);
-                  console.log(subjects);
-                  const faculties = await this.subjectRepo.fetchfaculties(subjects,user.section);
+                let subjects, faculties;
+
+                    if (user.year === 1) {
+                        // Call new function for first-year students
+                        ({ subjects, faculties } = await this.subjectRepo.fetch_firstyear_data(user.section));
+                    } else {
+                        // Call existing logic for other students
+                        subjects = await this.branchRepo.fetchSubjects(
+                            user.semester,
+                            user.discipline_id,
+                            user.uniqueid,
+                            user.branch_name,
+                            user.year
+                        );
+                        faculties = await this.subjectRepo.fetchfaculties(subjects, user.section);
+                    }
                   const questionsArray = [
                     "How would you rate the clarity of the instructor's explanations?",
                     "Did the instructor effectively engage with the students?",
@@ -93,6 +101,7 @@ export default class UserController {
                 ];
                   console.log("Subjects outside:", subjects);
                   console.log("faculties:", faculties);
+                  const uniqueId=user.uniqueid;
                   // res.send("asdmfklsvjbhskalj");
                   // res.render('feedback',{ subjects, faculties,questionsArray ,uniqueId});
                   req.session.feedbackData = { subjects, faculties, questionsArray, uniqueId };
