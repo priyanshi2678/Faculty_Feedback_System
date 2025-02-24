@@ -130,9 +130,7 @@ const questionsArray = [
 // });
 
 app.get("/",checkNotAuthenticated, async(req, res) => {
-  res.render('login.ejs', {
-    message: 'Welcome to Login Page.' // Pass the message to the login page
-  })
+  res.render("landing_page.ejs");
 });
 app.get("/login",checkNotAuthenticated, async(req, res) => {
   res.render('login.ejs', {
@@ -915,11 +913,7 @@ app.post('/subjects/upload', async (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
 
     return res.status(400).send('No files were uploaded.');
-
   }
-
-
-
   const subjectFile = req.files.subjectFile;
 
   const uploadPath = path.join(__dirname, 'uploads', subjectFile.name);

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Feedback System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #2c2c2c, #000000);;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 80%;
+        }
+
+        /* Typewriter Effect */
+        .typewriter {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            display: block;
+        }
+
+        .typewriter span {
+            opacity: 0;
+            transition: opacity 0.1s ease-in-out;
+        }
+
+        .line-break {
+            display: block;
+        }
+
+        /* Paragraph fade-in */
+        p {
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fadeInUp 2s ease-in-out forwards 3s;
+        }
+
+        /* Login Button */
+        .btn-custom {
+            background: linear-gradient(135deg, #ff4c68, rgba(224, 24, 24, 0.816));
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            border-radius: 30px;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fadeInUp 2s ease-in-out forwards 4s;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #ea02ff, #54015c);
+            transform: scale(1.1);
+        }
+
+        /* Animated Image */
+        .animated-img {
+            width: 100%;
+            max-width: 500px;
+            animation: float 3s infinite ease-in-out, fadeInDown 2s ease-in-out forwards;
+            /* filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)); */
+        }
+        
+
+        /* Fade-in animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            /* Reorder columns: image first, text below */
+            .image-section {
+                order: -1;
+            }
+
+            .text-section {
+                order: 1;
+            }
+
+            .typewriter {
+                font-size: 2rem;
+            }
+
+            .animated-img {
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Right Image Section (On mobile: Moves to Top) -->
+            <div class="col-md-6 d-flex justify-content-center image-section">
+                <img src="/assets/images/landing_page.png" alt="Feedback Icon" class="animated-img">
+            </div>
+            <!-- Left Text Section (On mobile: Moves below image) -->
+            <div class="col-md-6 text-section text-center">
+                <h1 class="typewriter"></h1>
+                <p>Provide valuable feedback to improve faculty performance.</p>
+                <a href="/login" class="btn btn-custom">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const text = "Faculty Feedback System"; 
+            const container = document.querySelector(".typewriter");
+
+            text.split("").forEach((char, i) => {
+                let span = document.createElement("span");
+
+                // Insert a break before "System"
+                if (i === 17) {
+                    let br = document.createElement("br");
+                    br.classList.add("line-break");
+                    container.appendChild(br);
+                }
+
+                span.textContent = char;
+                span.style.opacity = "0"; // Initially hidden
+                container.appendChild(span);
+
+                setTimeout(() => {
+                    span.style.opacity = "1"; // Show letter one by one
+                }, i * 150); // Delay between letters
+            });
+        });
+    </script>
+</body>
+</html>
